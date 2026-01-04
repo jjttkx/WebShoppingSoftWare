@@ -65,7 +65,7 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
-      HmMoreList(),
+      HmMoreList(recommendList: _recommendList),
     ];
   }
 
@@ -88,7 +88,7 @@ class _HomeViewState extends State<HomeView> {
     subTypes: [],
   );
 
-
+  List<GoodDetailItem> _recommendList = [];
 
   @override
   void initState() {
@@ -98,6 +98,7 @@ class _HomeViewState extends State<HomeView> {
     _getProductList();
     _getInVogueList();
     _getOneStopList();
+    _getRecommendList();
   }
 
   void _getBannerList() async {
@@ -117,6 +118,12 @@ class _HomeViewState extends State<HomeView> {
     setState(() {});
   }
 
+  // 获取推荐列表
+  void _getRecommendList() async {
+    _recommendList = await getRecommendListAPI({"limit": 10});
+    setState(() {});
+  }
+
   // 获取热榜推荐列表
   Future<void> _getInVogueList() async {
     _inVogueResult = await getInVogueListAPI();
@@ -126,8 +133,8 @@ class _HomeViewState extends State<HomeView> {
   Future<void> _getOneStopList() async {
     _oneStopResult = await getOneStopListAPI();
   }
-  
- @override
+
+  @override
   Widget build(BuildContext context) {
     return CustomScrollView(slivers: _getScrollChildren()); //sliver家族内容
   }
