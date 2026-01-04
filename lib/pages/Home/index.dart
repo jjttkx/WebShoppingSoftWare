@@ -53,9 +53,13 @@ class _HomeViewState extends State<HomeView> {
           child: Flex(
             direction: Axis.horizontal,
             children: [
-              Expanded(child: HmHot()),
+              Expanded(
+                child: HmHot(result: _inVogueResult, type: "hot"),
+              ),
               SizedBox(width: 10),
-              Expanded(child: HmHot()),
+              Expanded(
+                child: HmHot(result: _oneStopResult, type: "step"),
+              ),
             ],
           ),
         ),
@@ -71,12 +75,29 @@ class _HomeViewState extends State<HomeView> {
     subTypes: [],
   );
 
+  // 热榜推荐
+  SpecialRecommendResult _inVogueResult = SpecialRecommendResult(
+    id: "",
+    title: "",
+    subTypes: [],
+  );
+  // 一站式推荐
+  SpecialRecommendResult _oneStopResult = SpecialRecommendResult(
+    id: '',
+    title: "",
+    subTypes: [],
+  );
+
+
+
   @override
   void initState() {
     super.initState();
     _getBannerList();
     _getCategoryList();
     _getProductList();
+    _getInVogueList();
+    _getOneStopList();
   }
 
   void _getBannerList() async {
@@ -94,6 +115,16 @@ class _HomeViewState extends State<HomeView> {
   void _getProductList() async {
     _specialRecommendResult = await getProductListAPI();
     setState(() {});
+  }
+
+  // 获取热榜推荐列表
+  Future<void> _getInVogueList() async {
+    _inVogueResult = await getInVogueListAPI();
+  }
+
+  // 获取一站式推荐列表
+  Future<void> _getOneStopList() async {
+    _oneStopResult = await getOneStopListAPI();
   }
   
  @override
