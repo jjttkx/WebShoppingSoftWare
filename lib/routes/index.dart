@@ -12,6 +12,8 @@ Widget getRouteWidget() {
 }
 
 Map<String, Widget Function(BuildContext)> getRootRoutes() {
-  return {"/": (context) =>   MainPage(),//主页
-   "/login": (context) => LoginPage()};//登录页
+  return {
+    "/": (context) => MainPage(), //主页
+    "/login": (context) => LoginPage(), //登录页
+  };
 }

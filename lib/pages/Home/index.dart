@@ -43,7 +43,9 @@ class _HomeViewState extends State<HomeView> {
       //ListView
       SliverToBoxAdapter(child: HmCategory(categoryList: _categoryList)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
-      SliverToBoxAdapter(child: HmSuggestion()),
+      SliverToBoxAdapter(
+        child: HmSuggestion(specialRecommendResult: _specialRecommendResult),
+      ),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
       SliverToBoxAdapter(
         child: Padding(
@@ -63,37 +65,38 @@ class _HomeViewState extends State<HomeView> {
     ];
   }
 
+  SpecialRecommendResult _specialRecommendResult = SpecialRecommendResult(
+    id: '',
+    title: '',
+    subTypes: [],
+  );
+
   @override
   void initState() {
     super.initState();
     _getBannerList();
     _getCategoryList();
+    _getProductList();
   }
 
   void _getBannerList() async {
-    try {
-      print('开始请求轮播图数据...');
-      _bannerList = await getBannerListAPI();
-      print('轮播图数据获取成功: ${_bannerList.length} 条');
-      setState(() {});
-    } catch (e) {
-      print('获取轮播图数据失败: $e');
-    }
+    _bannerList = await getBannerListAPI();
+    setState(() {});
   }
 
   //分类列表
   void _getCategoryList() async {
-    try {
-      print('开始请求分类列表数据...');
-      _categoryList = await getCategoryListAPI();
-      print('分类列表数据获取成功: ${_categoryList.length} 条');
-      setState(() {});
-    } catch (e) {
-      print('获取分类列表数据失败: $e');
-    }
+    _categoryList = await getCategoryListAPI();
+    setState(() {});
   }
 
-  @override
+  //特惠推荐
+  void _getProductList() async {
+    _specialRecommendResult = await getProductListAPI();
+    setState(() {});
+  }
+  
+ @override
   Widget build(BuildContext context) {
     return CustomScrollView(slivers: _getScrollChildren()); //sliver家族内容
   }
