@@ -15,6 +15,8 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  //分类列表
+  List<CategoryItem> _categoryList = [];
   List<BannerItem> _bannerList = [
     // BannerItem(
     //   id: '1',
@@ -39,7 +41,7 @@ class _HomeViewState extends State<HomeView> {
       SliverToBoxAdapter(child: SizedBox(height: 10)),
       //SliverGrid SliverList只能纵向排列
       //ListView
-      SliverToBoxAdapter(child: HmCategory()),
+      SliverToBoxAdapter(child: HmCategory(categoryList: _categoryList)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
       SliverToBoxAdapter(child: HmSuggestion()),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
@@ -65,6 +67,7 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     _getBannerList();
+    _getCategoryList();
   }
 
   void _getBannerList() async {
@@ -75,6 +78,18 @@ class _HomeViewState extends State<HomeView> {
       setState(() {});
     } catch (e) {
       print('获取轮播图数据失败: $e');
+    }
+  }
+
+  //分类列表
+  void _getCategoryList() async {
+    try {
+      print('开始请求分类列表数据...');
+      _categoryList = await getCategoryListAPI();
+      print('分类列表数据获取成功: ${_categoryList.length} 条');
+      setState(() {});
+    } catch (e) {
+      print('获取分类列表数据失败: $e');
     }
   }
 
