@@ -2,6 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:hm_shop/constants/index.dart';
+import 'package:hm_shop/stores/TokenManager.dart';
 
 class DioRequest {
   final _dio = Dio();
@@ -19,6 +20,13 @@ class DioRequest {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (request, handler) {
+          //注入token request headers Authorization ="Bearer $token"
+          if (tokenManager.getToken().isNotEmpty) {
+            request.headers["Authorization"] = {
+              "Bearer ${tokenManager.getToken()}",
+            };
+          }
+
           handler.next(request);
         },
         onResponse: (response, handler) {
@@ -29,18 +37,28 @@ class DioRequest {
           handler.reject(DioException(requestOptions: response.requestOptions));
         },
         onError: (error, handler) {
-          handler.reject(error);
+          handler.reject(
+            DioException(
+              requestOptions: error.requestOptions,
+              message: error.response?.data["msg"] ?? " ",
+            ),
+          );
         },
       ),
     );
   }
 
-  get(String url, {Map<String, dynamic>? params}) async {
+  Future<dynamic> get(String url, {Map<String, dynamic>? params}) async {
     return _handleResponse(_dio.get(url, queryParameters: params));
   }
 
+  //定义post接口
+  Future<dynamic> post(String url, {Map<String, dynamic>? data}) async {
+    return _handleResponse(_dio.post(url, data: data));
+  }
+
   //进一步处理返回结果的函数
-  _handleResponse(Future<Response<dynamic>> task) async {
+  Future<dynamic> _handleResponse(Future<Response<dynamic>> task) async {
     try {
       Response<dynamic> res = await task;
       final data = res.data as Map<String, dynamic>; //data才是我们真实的接口返回的数据
@@ -49,9 +67,14 @@ class DioRequest {
         return data["result"];
       }
       //抛出异常
-      throw Exception(data["msg"] ?? "数据加载异常");
+      // throw Exception(data["msg"] ?? "数据加载异常");
+      throw DioException(
+        requestOptions: res.requestOptions,
+        message: data["msg"] ?? "数据加载失败",
+      );
     } catch (e) {
-      throw Exception(e);
+      // throw Exception(e);
+      rethrow; //不改变原来抛出的异常类型
     }
   }
 }
